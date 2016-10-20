@@ -7,14 +7,28 @@ var connection = mysql.createConnection({
   database : 'addressbook'
 });
 
-connection.query('SELECT AddressBook.id, AddressBook.name, Account.email FROM Account LEFT JOIN AddressBook ON Account.id=AddressBook.accountId GROUP BY Account.id limit 5', function (err, rows, fields){
+connection.query('SELECT Account.id, AddressBook.name, Account.email FROM Account LEFT JOIN AddressBook ON Account.id=AddressBook.accountId ORDER BY Account.id', function (err, rows, fields){
     if (err) {
         throw err;
     }
     else {
+        var info = {};
         rows.forEach(function(row) {
-            console.log('#' + row.id + ': ' + row.email + '\n' + row.name)
+            if (info[row.email]){
+                console.log(row.name)
+            }
+            else {
+                console.log('#' + row.id + ': ' + row.email);
+                if (row.name) {
+                    console.log(row.name)
+                }
+                else {
+                    console.log("--No address book--")
+                }
+                info[row.email] += row.name;
+            } 
         });
     }
     connection.end();
 })
+
